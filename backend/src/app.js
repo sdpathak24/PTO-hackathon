@@ -3,6 +3,11 @@ import dotenv from "dotenv";
 import cors from "cors";
 import connectDB from "./db.js";
 
+// ✅ import your routes
+import userRoutes from "./routes/users.js";
+import ptoRoutes from "./routes/pto.js";
+import coverageRoutes from "./routes/coverage.js";
+
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -10,9 +15,15 @@ const PORT = process.env.PORT || 8080;
 app.use(cors());
 app.use(express.json());
 
+// test route
 app.get("/", (req, res) => {
   res.send("🚀 SmartPTO backend is running!");
 });
+
+// ✅ mount routes
+app.use("/api/users", userRoutes);
+app.use("/api/pto", ptoRoutes);
+app.use("/api/coverage", coverageRoutes);
 
 connectDB().then(() => {
   app.listen(PORT, () => {
