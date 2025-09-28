@@ -8,7 +8,14 @@ const ptoSchema = new mongoose.Schema(
     startDate: { type: Date, required: true },
     endDate: { type: Date, required: true },
     reason: { type: String, default: "" },
-    status: { type: String, enum: ["pending", "approved", "denied"], default: "pending" }
+    leaveType: { 
+      type: String, 
+      required: true, 
+      enum: ["personal", "sick", "bereavement", "maternity", "paternity"] 
+    },
+    status: { type: String, enum: ["pending", "approved", "denied"], default: "pending" },
+    aiRecommendation: { type: String, default: "" },
+    daysRequested: { type: Number, required: true }
   },
   { timestamps: true }
 );

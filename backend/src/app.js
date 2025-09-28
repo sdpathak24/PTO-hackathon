@@ -7,6 +7,8 @@ import connectDB from "./db.js";
 import userRoutes from "./routes/users.js";
 import ptoRoutes from "./routes/pto.js";
 import coverageRoutes from "./routes/coverage.js";
+import hrRoutes from "./routes/hr.js";
+import chatbotRoutes from "./routes/chatbot.js";
 
 dotenv.config();
 const app = express();
@@ -24,6 +26,8 @@ app.get("/", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/pto", ptoRoutes);
 app.use("/api/coverage", coverageRoutes);
+app.use("/api/hr", hrRoutes);
+app.use("/api/chatbot", chatbotRoutes);
 
 connectDB().then(() => {
   app.listen(PORT, () => {

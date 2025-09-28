@@ -2,6 +2,7 @@ import express from "express";
 import User from "../models/User.js";
 import PTORequest from "../models/PTORequest.js";
 import CoverageRule from "../models/CoverageRule.js";
+import { getAthenaRecommendation } from "../services/aiService.js";
 
 const router = express.Router();
 
@@ -56,7 +57,23 @@ router.post("/", async (req, res) => {
       reason
     });
 
-    res.json({ pto, analysis: { teamCount, minOnDuty, maxAllowedOff, overlapping, risk, suggestion } });
+    // Get AI recommendation
+    const aiRecommendation = await getAthenaRecommendation({
+      team: user.team,
+      role: user.role,
+      teamCount,
+      minOnDuty,
+      maxAllowedOff,
+      overlapping,
+      risk,
+      suggestion
+    });
+
+    res.json({ 
+      pto, 
+      analysis: { teamCount, minOnDuty, maxAllowedOff, overlapping, risk, suggestion },
+      athena: aiRecommendation
+    });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
@@ -85,6 +102,33 @@ router.patch("/:id/status", async (req, res) => {
     if (!updated) return res.status(404).json({ error: "PTO not found" });
 
     res.json(updated);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Get AI recommendation for a specific PTO request
+router.get("/ai/recommendation/:id", async (req, res) => {
+  try {
+    const ptoRequest = await PTORequest.findById(req.params.id);
+    if (!ptoRequest) {
+      return res.status(404).json({ error: "PTO request not found" });
+    }
+
+    // For now, return a simple recommendation
+    // In a real implementation, you'd analyze the request and get AI recommendation
+    const aiRecommendation = await getAthenaRecommendation({
+      team: ptoRequest.team,
+      role: ptoRequest.role,
+      teamCount: 1, // You'd calculate this
+      minOnDuty: 1,
+      maxAllowedOff: 0,
+      overlapping: 0,
+      risk: false,
+      suggestion: "Manual analysis needed"
+    });
+
+    res.json(aiRecommendation);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
